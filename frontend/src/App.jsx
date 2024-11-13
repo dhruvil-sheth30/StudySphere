@@ -9,15 +9,13 @@ import { useAuthContext } from "./context/AuthContext";
 function App() {
 	const { authUser } = useAuthContext();
 	return (
-		<div className='min-h-screen bg-gradient-to-br from-purple-900 via-slate-800 to-black p-4'>
-			<div className='max-w-7xl mx-auto'>
-				<Routes>
-					<Route path='/' element={authUser ? <Home /> : <Navigate to={"/login"} />} />
-					<Route path='/login' element={authUser ? <Navigate to='/' /> : <Login />} />
-					<Route path='/signup' element={authUser ? <Navigate to='/' /> : <SignUp />} />
-				</Routes>
-				<Toaster position='top-center' reverseOrder={false} />
-			</div>
+		<div className='p-4 h-screen flex items-center justify-center'>
+			<Routes>
+				<Route path='/' element={authUser ? <Home /> : <Navigate to={"/login"} />} />
+				<Route path='/login' element={authUser ? <Navigate to='/' /> : <Login />} />
+				<Route path='/signup' element={authUser ? <Navigate to='/' /> : <SignUp />} />
+			</Routes>
+			<Toaster />
 		</div>
 	);
 }
