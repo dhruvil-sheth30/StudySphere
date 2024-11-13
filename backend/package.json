@@ -1,13 +1,23 @@
 {
-"name": "worst_movies",
+  "name": "backend",
   "version": "1.0.0",
-  "description": "The Mediocre Big Budget Movies Showcase project aims to create a platform where users can discover and explore a curated list of big-budget movies that received mixed or mediocre reviews from critics and audiences. This project will highlight movies that, despite their high production budgets, failed to meet expectations in terms of critical acclaim or box office success.",
+  "description": "",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon server.js"
   },
-  "keywords": [],
+  "type": "module",
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.7.2",
+    "socket.io": "^4.8.0"
+  }
 }
