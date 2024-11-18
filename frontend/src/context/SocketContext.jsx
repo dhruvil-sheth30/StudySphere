@@ -17,7 +17,7 @@ export const SocketContextProvider = ({ children }) => {
 		if (authUser) {
 			// This URL points to the backend server deployed on render.com
 			// In development, you would use something like "http://localhost:5000"
-			const socket = io("http://localhost:5000", {
+			const socket = io("https://studysphere-9ar7.onrender.com", {
 				query: {
 					userId: authUser._id,
 				},
