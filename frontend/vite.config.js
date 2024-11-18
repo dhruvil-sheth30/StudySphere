@@ -8,7 +8,7 @@ export default defineConfig({
 		port: 3000,
 		proxy: {
 			"/api": {
-				target: import.meta.env.VITE_BACKEND_URL,
+				target: "https://studysphere-9ar7.onrender.com",
 				changeOrigin: true,
 				secure: false,
 			},
