@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { useAuthContext } from "./AuthContext";
 import io from "socket.io-client";
+import { API_BASE_URL } from "../config/api.js";
 
 const SocketContext = createContext();
 
@@ -15,9 +16,7 @@ export const SocketContextProvider = ({ children }) => {
 
 	useEffect(() => {
 		if (authUser) {
-			// This URL points to the backend server deployed on render.com
-			// In development, you would use something like "http://localhost:5000"
-			const socket = io("https://studysphere-9ar7.onrender.com", {
+			const socket = io(API_BASE_URL, {		
 				query: {
 					userId: authUser._id,
 				},
@@ -25,7 +24,6 @@ export const SocketContextProvider = ({ children }) => {
 
 			setSocket(socket);
 
-			// socket.on() is used to listen to the events. can be used both on client and server side
 			socket.on("getOnlineUsers", (users) => {
 				setOnlineUsers(users);
 			});
