@@ -6,6 +6,16 @@ meta {
 
 post {
   url: https://studysphere-9ar7.onrender.com/api/auth/signup
-  body: none
+  body: json
   auth: none
+}
+
+body:json {
+  {
+    "fullName": "Test User",
+    "username": "testuser123",
+    "password": "123456",
+    "confirmPassword": "123456",
+    "gender": "male"
+  }
 }
