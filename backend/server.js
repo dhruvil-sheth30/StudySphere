@@ -20,7 +20,7 @@ app.use(express.json()); // to parse the incoming requests with JSON payloads (f
 app.use(cookieParser());
 app.use(cors({
 	credentials: true,
-	origin: ['http://localhost:3000', 'https://study-sphere-lime.vercel.app'],
+	origin: ['http://localhost:3000', 'https://study-sphere-atgr.vercel.app'],
 	methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 	allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'Set-Cookie'],
 	exposedHeaders: ['Set-Cookie'],
