@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { useAuthContext } from "./AuthContext";
 import io from "socket.io-client";
-import { API_BASE_URL } from "../config/api.js";
+import { API_BASE_URL } from "../config/api";
 
 const SocketContext = createContext();
 
@@ -16,14 +16,16 @@ export const SocketContextProvider = ({ children }) => {
 
 	useEffect(() => {
 		if (authUser) {
-			const socket = io(API_BASE_URL, {		
+			const socket = io(API_BASE_URL, {
 				query: {
 					userId: authUser._id,
 				},
+				withCredentials: true
 			});
 
 			setSocket(socket);
 
+			// socket.on() is used to listen to the events. can be used both on client and server side
 			socket.on("getOnlineUsers", (users) => {
 				setOnlineUsers(users);
 			});

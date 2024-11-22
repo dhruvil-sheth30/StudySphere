@@ -8,10 +8,19 @@ const useGetMessages = () => {
 
 	useEffect(() => {
 		const getMessages = async () => {
+			console.log("Selected conversation:", selectedConversation);
 			setLoading(true);
 			try {
-				const res = await fetch(`${API_BASE_URL}/api/messages/${selectedConversation._id}`, {
-					credentials: 'include'
+				if (!selectedConversation?._id) {
+					console.warn("No conversation selected");
+					return;
+				}
+				const res = await fetch(`${API_BASE_URL}/api/message/${selectedConversation?._id}`, {
+					credentials: 'include',
+					headers: {
+						'Content-Type': 'application/json',
+						'Accept': 'application/json'
+					}
 				});
 				const data = await res.json();
 				if (data.error) throw new Error(data.error);
