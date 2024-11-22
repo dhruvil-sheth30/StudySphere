@@ -65,6 +65,11 @@ export const login = async (req, res) => {
 
 		generateTokenAndSetCookie(user._id, res);
 
+		console.log("Cookie set during login:", res.getHeader('set-cookie'));
+
+		res.setHeader('Access-Control-Allow-Credentials', 'true');
+		res.setHeader('Access-Control-Expose-Headers', 'Set-Cookie');
+
 		res.status(200).json({
 			_id: user._id,
 			fullName: user.fullName,

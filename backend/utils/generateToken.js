@@ -10,7 +10,8 @@ const generateTokenAndSetCookie = (userId, res) => {
 		httpOnly: true,
 		sameSite: "none",
 		secure: true,
-		domain: ".onrender.com"
+		path: "/",
+		domain: "studysphere-9ar7.onrender.com"
 	});
 };
 

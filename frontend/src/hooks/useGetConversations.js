@@ -14,7 +14,7 @@ const useGetConversations = () => {
 					credentials: 'include',
 					headers: {
 						'Content-Type': 'application/json',
-						'Accept': 'application/json'
+						'Accept': 'application/json',
 					}
 				});
 				const data = await res.json();
