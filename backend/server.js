@@ -23,6 +23,7 @@ app.use(cors({
 	credentials: true,
 	methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 }));
+app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 
 server.listen(PORT, () => {
