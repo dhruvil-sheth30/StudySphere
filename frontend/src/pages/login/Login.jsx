@@ -1,17 +1,40 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUser, FaLock } from "react-icons/fa";
 import useLogin from "../../hooks/useLogin";
+import { useAuthContext } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 
 const Login = () => {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
-
+	const { authUser } = useAuthContext();
+	const navigate = useNavigate();
+	const location = useLocation();
+	
 	const { loading, login } = useLogin();
+
+	// If user is already logged in, redirect
+	useEffect(() => {
+		if (authUser) {
+			// Navigate to the chat page
+			navigate("/chat");
+		}
+	}, [authUser, navigate]);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		await login(username, password);
+		if (!username || !password) {
+			toast.error("Please fill in all fields");
+			return;
+		}
+		
+		const success = await login(username, password);
+		if (success) {
+			// Redirect to the page they were trying to access, or to /chat by default
+			const from = location.state?.from || "/chat";
+			navigate(from);
+		}
 	};
 
 	return (

@@ -10,17 +10,27 @@ import { useAuthContext } from "./context/AuthContext";
 
 function App() {
 	const { authUser } = useAuthContext();
+	
 	return (
 		<>
 			<Navbar />
 			<div className='p-4 h-screen flex items-center justify-center'>
 				<Routes>
+					{/* Public routes */}
 					<Route path="/" element={<Landing />} />
-					<Route path='/chat' element={authUser ? <Home /> : <Navigate to={"/login"} />} />
 					<Route path='/login' element={authUser ? <Navigate to='/chat' /> : <Login />} />
 					<Route path='/signup' element={authUser ? <Navigate to='/chat' /> : <SignUp />} />
+					
+					{/* Protected routes */}
+					<Route 
+						path='/chat' 
+						element={authUser ? <Home /> : <Navigate to={"/login"} state={{ from: "/chat" }} />} 
+					/>
+					
+					{/* Catch all - redirect to landing page */}
+					<Route path="*" element={<Navigate to="/" />} />
 				</Routes>
-				<Toaster />
+				<Toaster position="top-center" reverseOrder={false} />
 			</div>
 		</>
 	);
