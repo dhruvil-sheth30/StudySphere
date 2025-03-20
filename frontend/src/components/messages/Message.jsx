@@ -18,12 +18,17 @@ const Message = ({ message }) => {
         <div className={`chat ${chatClassName}`}>
             <div className='chat-image avatar'>
                 <div className='w-10 rounded-full'>
-                    <img alt='Tailwind CSS chat bubble component' src={profilePic} />
+                    <img alt='Profile' src={profilePic} />
                 </div>
             </div>
-            <div className={`chat-bubble text-white ${bubbleBgColor} ${shakeClass} pb-2`}>
+            <div className={`chat-bubble text-white ${bubbleBgColor} ${shakeClass} pb-2 ${message.imageUrl ? 'max-w-xs' : ''}`}>
                 {message.imageUrl ? (
-                    <ImageMessage imageUrl={message.imageUrl} />
+                    <>
+                        <ImageMessage imageUrl={message.imageUrl} />
+                        {message.message && (
+                            <div className="mt-2">{message.message}</div>
+                        )}
+                    </>
                 ) : (
                     message.message
                 )}

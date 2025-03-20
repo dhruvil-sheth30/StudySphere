@@ -11,7 +11,18 @@ import uploadRoutes from "./routes/upload.routes.js";
 import connectToMongoDB from "./db/connectToMongoDB.js";
 import { app, server } from "./socket/socket.js";
 
+// Ensure environment variables are loaded at the very beginning
 dotenv.config();
+
+// Debug important environment variables
+console.log("\n--- Environment Variables Check ---");
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("MONGODB_URI:", process.env.MONGODB_URI ? "Available" : "MISSING");
+console.log("JWT_SECRET:", process.env.JWT_SECRET ? "Available" : "MISSING");
+console.log("CLOUDINARY_CLOUD_NAME:", process.env.CLOUDINARY_CLOUD_NAME || "MISSING");
+console.log("CLOUDINARY_API_KEY:", process.env.CLOUDINARY_API_KEY || "MISSING");
+console.log("CLOUDINARY_API_SECRET:", process.env.CLOUDINARY_API_SECRET ? "Available" : "MISSING");
+console.log("-----------------------------\n");
 
 const __dirname = path.resolve();
 const isProduction = process.env.NODE_ENV === "production";
@@ -21,7 +32,7 @@ const PORT = process.env.PORT || 5000;
 console.log("Environment:", process.env.NODE_ENV);
 console.log("Is production:", isProduction);
 
-app.use(express.json()); // to parse the incoming requests with JSON payloads (from req.body)
+app.use(express.json({ limit: '50mb' })); // Increased limit for base64 images
 app.use(cookieParser());
 
 // CORS configuration - simplified but effective approach

@@ -23,11 +23,19 @@ export const sendMessage = async (req, res) => {
             });
         }
 
+        // Check if imageUrl is a base64 string (temporary development solution)
+        let finalImageUrl = imageUrl;
+        if (imageUrl && imageUrl.startsWith('data:image')) {
+            // For development: just store the base64 string directly
+            // In production, this should be replaced with proper Cloudinary upload
+            console.log("Using base64 image (development mode)");
+        }
+
         const newMessage = new Message({
             senderId,
             receiverId,
             message,
-            imageUrl,
+            imageUrl: finalImageUrl,
         });
 
         if (newMessage) {

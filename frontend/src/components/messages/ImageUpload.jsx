@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { BsImage } from 'react-icons/bs';
 import { MdCancel } from 'react-icons/md';
 import toast from 'react-hot-toast';
+import { API_BASE_URL } from '../../config/api';
 
 const ImageUpload = ({ onImageSelected, onImageClear }) => {
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -30,29 +31,17 @@ const ImageUpload = ({ onImageSelected, onImageClear }) => {
     };
     reader.readAsDataURL(file);
 
-    // Upload to Cloudinary through our API
-    setIsUploading(true);
-    
+    // Use the base64 data URL directly
     try {
-      const formData = new FormData();
-      formData.append("image", file);
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        credentials: 'include',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to upload image');
-      }
-
-      const data = await response.json();
-      onImageSelected(data.imageUrl);
+      setIsUploading(true);
+      
+      // Use base64 directly for development
+      onImageSelected(reader.result);
+      toast.success('Image ready to send');
+      setIsUploading(false);
     } catch (error) {
-      toast.error(error.message || 'Error uploading image');
-      clearImage();
+      console.error('Upload error:', error);
+      toast.error(error.message || 'Error processing image');
     } finally {
       setIsUploading(false);
     }
@@ -64,24 +53,25 @@ const ImageUpload = ({ onImageSelected, onImageClear }) => {
   };
 
   return (
-    <div className="relative">
+    <div className={`flex items-center ${previewUrl ? 'flex-col' : ''}`}>
       {previewUrl ? (
-        <div className="relative inline-block">
+        <div className="relative mb-2 rounded-md overflow-hidden border border-gray-600 bg-gray-800">
           <img 
             src={previewUrl} 
             alt="Upload preview" 
-            className="h-20 rounded-md mb-2"
+            className="h-24 w-auto object-cover"
           />
           <button
             onClick={clearImage}
-            className="absolute top-0 right-0 bg-gray-900 bg-opacity-70 rounded-full p-1 text-white"
+            className="absolute top-1 right-1 bg-gray-900 bg-opacity-70 rounded-full p-1 text-white hover:bg-red-600 transition-colors"
             type="button"
+            title="Remove image"
           >
-            <MdCancel size={18} />
+            <MdCancel size={20} />
           </button>
         </div>
       ) : (
-        <label className="cursor-pointer text-gray-400 hover:text-gray-200 p-2">
+        <label className="cursor-pointer text-gray-400 hover:text-blue-400 p-2 transition-colors flex items-center" title="Upload image">
           <BsImage size={20} />
           <input
             type="file"
@@ -94,7 +84,7 @@ const ImageUpload = ({ onImageSelected, onImageClear }) => {
       )}
       
       {isUploading && (
-        <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50">
+        <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50 z-10">
           <div className="loading loading-spinner text-white"></div>
         </div>
       )}

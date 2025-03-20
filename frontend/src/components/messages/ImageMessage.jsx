@@ -7,26 +7,39 @@ const ImageMessage = ({ imageUrl }) => {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
+  // Function to handle image loading errors
+  const handleImageError = (e) => {
+    e.target.onerror = null; 
+    e.target.src = '/fallback-image.png'; // Use a fallback image
+    console.error('Image failed to load:', imageUrl);
+  };
+
   return (
     <>
-      <div className="relative group">
+      <div className="relative group rounded-md overflow-hidden">
         <img 
           src={imageUrl} 
           alt="Shared image" 
-          className="max-h-60 rounded-md cursor-pointer" 
+          className="max-h-60 w-full object-cover cursor-pointer rounded-md border border-gray-600" 
           onClick={openModal}
+          onError={handleImageError}
         />
-        <button 
+        <div 
           onClick={openModal}
-          className="absolute top-2 right-2 bg-gray-800 bg-opacity-50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+          className="absolute inset-0 bg-black bg-opacity-0 flex items-center justify-center group-hover:bg-opacity-30 transition-all duration-300"
         >
-          <AiOutlineZoomIn size={18} />
-        </button>
+          <button 
+            className="bg-black bg-opacity-50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity transform scale-90 group-hover:scale-100"
+            title="View full image"
+          >
+            <AiOutlineZoomIn size={20} />
+          </button>
+        </div>
       </div>
 
       {isModalOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"
           onClick={closeModal}
         >
           <div className="max-w-4xl max-h-[90vh] relative">
@@ -34,9 +47,10 @@ const ImageMessage = ({ imageUrl }) => {
               src={imageUrl} 
               alt="Full size image" 
               className="max-w-full max-h-[90vh] object-contain"
+              onError={handleImageError}
             />
             <button 
-              className="absolute top-4 right-4 bg-gray-800 bg-opacity-70 text-white px-3 py-1 rounded-full"
+              className="absolute top-4 right-4 bg-gray-800 bg-opacity-70 text-white px-4 py-2 rounded-full hover:bg-gray-700"
               onClick={closeModal}
             >
               Close
