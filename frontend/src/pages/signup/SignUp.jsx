@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import GenderCheckbox from "./GenderCheckbox";
 import { useState } from "react";
 import useSignup from "../../hooks/useSignup";
+import { FaUser, FaLock, FaIdCard } from "react-icons/fa";
 
 const SignUp = () => {
 	const [inputs, setInputs] = useState({
@@ -24,80 +25,110 @@ const SignUp = () => {
 	};
 
 	return (
-		<div className='flex flex-col items-center justify-center min-w-96 mx-auto'>
-			<div className='w-full p-6 rounded-lg shadow-md bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-0'>
-				<h1 className='text-3xl font-semibold text-center text-gray-300'>
-					Sign Up <span className='text-blue-500'> StudySphere</span>
+		<div className='flex flex-col items-center justify-center min-w-96 mx-auto mt-16'>
+			<div className='w-full p-8 rounded-lg shadow-lg bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-lg'>
+				<h1 className='text-4xl font-bold text-center text-gray-100 mb-8'>
+					Join <span className='text-blue-500'>StudySphere</span> Today
 				</h1>
 
-				<form onSubmit={handleSubmit}>
-					<div>
-						<label className='label p-2'>
-							<span className='text-base label-text'>Full Name</span>
+				<form onSubmit={handleSubmit} className="space-y-4">
+					<div className="relative">
+						<label className='block text-gray-300 text-sm font-medium mb-2'>
+							Full Name
 						</label>
-						<input
-							type='text'
-							placeholder='John Doe'
-							className='w-full input input-bordered  h-10'
-							value={inputs.fullName}
-							onChange={(e) => setInputs({ ...inputs, fullName: e.target.value })}
-						/>
+						<div className="flex items-center">
+							<span className="absolute left-3 text-gray-400">
+								<FaIdCard />
+							</span>
+							<input
+								type='text'
+								placeholder='John Doe'
+								className='w-full bg-gray-700 bg-opacity-50 text-white px-10 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+								value={inputs.fullName}
+								onChange={(e) => setInputs({ ...inputs, fullName: e.target.value })}
+							/>
+						</div>
 					</div>
 
-					<div>
-						<label className='label p-2 '>
-							<span className='text-base label-text'>Username</span>
+					<div className="relative">
+						<label className='block text-gray-300 text-sm font-medium mb-2'>
+							Username
 						</label>
-						<input
-							type='text'
-							placeholder='johndoe'
-							className='w-full input input-bordered h-10'
-							value={inputs.username}
-							onChange={(e) => setInputs({ ...inputs, username: e.target.value })}
-						/>
+						<div className="flex items-center">
+							<span className="absolute left-3 text-gray-400">
+								<FaUser />
+							</span>
+							<input
+								type='text'
+								placeholder='johndoe'
+								className='w-full bg-gray-700 bg-opacity-50 text-white px-10 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+								value={inputs.username}
+								onChange={(e) => setInputs({ ...inputs, username: e.target.value })}
+							/>
+						</div>
 					</div>
 
-					<div>
-						<label className='label'>
-							<span className='text-base label-text'>Password</span>
+					<div className="relative">
+						<label className='block text-gray-300 text-sm font-medium mb-2'>
+							Password
 						</label>
-						<input
-							type='password'
-							placeholder='Enter Password'
-							className='w-full input input-bordered h-10'
-							value={inputs.password}
-							onChange={(e) => setInputs({ ...inputs, password: e.target.value })}
-						/>
+						<div className="flex items-center">
+							<span className="absolute left-3 text-gray-400">
+								<FaLock />
+							</span>
+							<input
+								type='password'
+								placeholder='Enter Password'
+								className='w-full bg-gray-700 bg-opacity-50 text-white px-10 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+								value={inputs.password}
+								onChange={(e) => setInputs({ ...inputs, password: e.target.value })}
+							/>
+						</div>
 					</div>
 
-					<div>
-						<label className='label'>
-							<span className='text-base label-text'>Confirm Password</span>
+					<div className="relative">
+						<label className='block text-gray-300 text-sm font-medium mb-2'>
+							Confirm Password
 						</label>
-						<input
-							type='password'
-							placeholder='Confirm Password'
-							className='w-full input input-bordered h-10'
-							value={inputs.confirmPassword}
-							onChange={(e) => setInputs({ ...inputs, confirmPassword: e.target.value })}
-						/>
+						<div className="flex items-center">
+							<span className="absolute left-3 text-gray-400">
+								<FaLock />
+							</span>
+							<input
+								type='password'
+								placeholder='Confirm Password'
+								className='w-full bg-gray-700 bg-opacity-50 text-white px-10 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+								value={inputs.confirmPassword}
+								onChange={(e) => setInputs({ ...inputs, confirmPassword: e.target.value })}
+							/>
+						</div>
 					</div>
 
-					<GenderCheckbox onCheckboxChange={handleCheckboxChange} selectedGender={inputs.gender} />
+					<div className="mt-4">
+						<label className='block text-gray-300 text-sm font-medium mb-2'>
+							Gender
+						</label>
+						<GenderCheckbox onCheckboxChange={handleCheckboxChange} selectedGender={inputs.gender} />
+					</div>
 
-					<Link
-						to={"/login"}
-						className='text-sm hover:underline hover:text-blue-600 mt-2 inline-block'
-						href='#'
+					<div className="flex items-center justify-between mt-4">
+						<Link
+							to='/login'
+							className='text-blue-400 hover:underline text-sm'
+						>
+							Already have an account?
+						</Link>
+						<Link to='/' className='text-gray-400 hover:underline text-sm'>
+							Back to home
+						</Link>
+					</div>
+
+					<button 
+						className='w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex justify-center items-center mt-4' 
+						disabled={loading}
 					>
-						Already have an account?
-					</Link>
-
-					<div>
-						<button className='btn btn-block btn-sm mt-2 border border-slate-700' disabled={loading}>
-							{loading ? <span className='loading loading-spinner'></span> : "Sign Up"}
-						</button>
-					</div>
+						{loading ? <span className='loading loading-spinner'></span> : "Sign Up"}
+					</button>
 				</form>
 			</div>
 		</div>

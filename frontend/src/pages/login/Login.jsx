@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { FaUser, FaLock } from "react-icons/fa";
 import useLogin from "../../hooks/useLogin";
 
 const Login = () => {
@@ -14,48 +15,64 @@ const Login = () => {
 	};
 
 	return (
-		<div className='flex flex-col items-center justify-center min-w-96 mx-auto'>
-			<div className='w-full p-6 rounded-lg shadow-md bg-gray-400 bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-0'>
-				<h1 className='text-3xl font-semibold text-center text-gray-300'>
-					Login
-					<span className='text-blue-500'> StudySphere</span>
+		<div className='flex flex-col items-center justify-center min-w-96 mx-auto mt-16'>
+			<div className='w-full p-8 rounded-lg shadow-lg bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-lg'>
+				<h1 className='text-4xl font-bold text-center text-gray-100 mb-8'>
+					Welcome Back to <span className='text-blue-500'>StudySphere</span>
 				</h1>
 
-				<form onSubmit={handleSubmit}>
-					<div>
-						<label className='label p-2'>
-							<span className='text-base label-text'>Username</span>
+				<form onSubmit={handleSubmit} className="space-y-6">
+					<div className="relative">
+						<label className='block text-gray-300 text-sm font-medium mb-2'>
+							Username
 						</label>
-						<input
-							type='text'
-							placeholder='Enter username'
-							className='w-full input input-bordered h-10'
-							value={username}
-							onChange={(e) => setUsername(e.target.value)}
-						/>
+						<div className="flex items-center">
+							<span className="absolute left-3 text-gray-400">
+								<FaUser />
+							</span>
+							<input
+								type='text'
+								placeholder='Enter username'
+								className='w-full bg-gray-700 bg-opacity-50 text-white px-10 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+								value={username}
+								onChange={(e) => setUsername(e.target.value)}
+							/>
+						</div>
 					</div>
 
-					<div>
-						<label className='label'>
-							<span className='text-base label-text'>Password</span>
+					<div className="relative">
+						<label className='block text-gray-300 text-sm font-medium mb-2'>
+							Password
 						</label>
-						<input
-							type='password'
-							placeholder='Enter Password'
-							className='w-full input input-bordered h-10'
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
-						/>
+						<div className="flex items-center">
+							<span className="absolute left-3 text-gray-400">
+								<FaLock />
+							</span>
+							<input
+								type='password'
+								placeholder='Enter Password'
+								className='w-full bg-gray-700 bg-opacity-50 text-white px-10 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+								value={password}
+								onChange={(e) => setPassword(e.target.value)}
+							/>
+						</div>
 					</div>
-					<Link to='/signup' className='text-sm  hover:underline hover:text-blue-600 mt-2 inline-block'>
-						{"Don't"} have an account?
-					</Link>
+					
+					<div className="flex items-center justify-between">
+						<Link to='/signup' className='text-blue-400 hover:underline text-sm'>
+							Don't have an account?
+						</Link>
+						<Link to='/' className='text-gray-400 hover:underline text-sm'>
+							Back to home
+						</Link>
+					</div>
 
-					<div>
-						<button className='btn btn-block btn-sm mt-2' disabled={loading}>
-							{loading ? <span className='loading loading-spinner '></span> : "Login"}
-						</button>
-					</div>
+					<button 
+						className='w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex justify-center items-center' 
+						disabled={loading}
+					>
+						{loading ? <span className='loading loading-spinner'></span> : "Login"}
+					</button>
 				</form>
 			</div>
 		</div>
