@@ -1,7 +1,7 @@
 # StudySphere
 
 <p align="center">
-  <img src="frontend/public/bg.png" alt="StudySphere Logo" width="200"/>
+  <img src="frontend/public/chat.png" alt="StudySphere Logo" width="200"/>
 </p>
 
 ## 📚 About
