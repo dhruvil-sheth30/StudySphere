@@ -1,40 +1,30 @@
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import { IoSend } from "react-icons/io5";
+import { FaSmile } from "react-icons/fa";
 import useSendMessage from "../../hooks/useSendMessage";
 import ImageUpload from "./ImageUpload";
 
 const MessageInput = () => {
     const [message, setMessage] = useState("");
     const [imageUrl, setImageUrl] = useState(null);
-    const [debugInfo, setDebugInfo] = useState({ hasContent: false });
     const { loading, sendMessage } = useSendMessage();
+    const inputRef = useRef(null);
 
-    // Force check hasContent whenever message or imageUrl changes
+    // Focus the input when component mounts
+    const focusInput = () => {
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
+    };
+
+    // Check if there's valid content to send (either non-empty text OR image)
     const hasContent = Boolean(message.trim() || imageUrl);
-    
-    // Debug logging for UI state
-    useEffect(() => {
-        const info = {
-            hasContent,
-            messageLength: message?.length,
-            hasImageUrl: !!imageUrl,
-            buttonActive: hasContent && !loading,
-        };
-        setDebugInfo(info);
-        console.log("Input State:", info);
-    }, [message, imageUrl, hasContent, loading]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        console.log("Form submitted with:", {
-            message: message || "(empty)",
-            hasImage: !!imageUrl
-        });
-        
         // Don't proceed if there's nothing to send
         if (!message.trim() && !imageUrl) {
-            console.warn("No content to send");
             return;
         }
         
@@ -44,6 +34,7 @@ const MessageInput = () => {
             // Clear inputs after successful send
             setMessage("");
             setImageUrl(null);
+            focusInput();
         } catch (error) {
             console.error("Error sending message:", error);
         }
@@ -60,41 +51,44 @@ const MessageInput = () => {
             )}
 
             <div className='w-full flex flex-col'>
-                <div className="relative flex items-center bg-gray-700 rounded-lg overflow-hidden">
+                <div className="relative flex items-center bg-gray-700 rounded-lg overflow-hidden shadow-md">
                     <div className="flex-shrink-0 pl-2">
                         <ImageUpload 
-                            onImageSelected={(url) => {
-                                console.log("Image selected in MessageInput:", url ? "YES" : "NO");
-                                setImageUrl(url);
-                            }} 
-                            onImageClear={() => {
-                                console.log("Image cleared in MessageInput");
-                                setImageUrl(null);
-                            }} 
+                            onImageSelected={(url) => setImageUrl(url)} 
+                            onImageClear={() => setImageUrl(null)} 
                         />
                     </div>
                     
                     <input
+                        ref={inputRef}
                         type='text'
-                        className='border-none text-sm block w-full p-3 bg-transparent text-white focus:outline-none flex-1'
-                        placeholder='Send a message'
+                        className='border-none text-sm block w-full py-3 px-3 bg-transparent text-white focus:outline-none flex-1'
+                        placeholder='Type your message here...'
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                     />
                     
+                    {/* Optional: Add emoji button */}
+                    <button 
+                        type="button"
+                        className="text-gray-400 hover:text-gray-200 px-2"
+                        onClick={() => alert("Emoji picker coming soon!")}
+                    >
+                        <FaSmile size={20} />
+                    </button>
+                    
                     <button 
                         type='submit' 
-                        className={`px-3 py-2 flex items-center justify-center ${
+                        className={`px-4 py-3 flex items-center justify-center transition-colors ${
                             hasContent 
                                 ? 'text-white bg-blue-600 hover:bg-blue-700' 
                                 : 'text-gray-400 bg-gray-800 cursor-not-allowed'
-                        } transition-colors`}
+                        }`}
                         disabled={loading || !hasContent}
-                        onClick={() => console.log("Send button clicked, hasContent:", hasContent)}
                     >
                         {loading ? 
                             <div className='loading loading-spinner loading-sm'></div> : 
-                            <IoSend size={18} className={hasContent ? "text-white" : "text-gray-400"} />
+                            <IoSend size={18} />
                         }
                     </button>
                 </div>
@@ -105,13 +99,6 @@ const MessageInput = () => {
                     </div>
                 )}
             </div>
-            
-            {/* Debug info - remove in production */}
-            {process.env.NODE_ENV !== 'production' && (
-                <pre className="text-xs text-gray-500 mt-2 hidden">
-                    {JSON.stringify(debugInfo, null, 2)}
-                </pre>
-            )}
         </form>
     );
 };

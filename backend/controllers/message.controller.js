@@ -1,6 +1,7 @@
 import Conversation from "../models/conversation.model.js";
 import Message from "../models/message.model.js";
-import { getReceiverSocketId, io } from "../socket/socket.js";
+import { getReceiverSocketId, io, emitWithUserInfo } from "../socket/socket.js";
+import User from "../models/user.model.js";
 
 export const sendMessage = async (req, res) => {
     try {
@@ -52,11 +53,17 @@ export const sendMessage = async (req, res) => {
         await Promise.all([conversation.save(), newMessage.save()]);
         console.log("Message saved successfully:", newMessage._id);
 
+        // Add sender name to the message object for better UI display
+        const sender = await User.findById(senderId).select("fullName");
+        if (sender) {
+            newMessage._doc.senderName = sender.fullName;
+        }
+
         // Send real-time notification
         const receiverSocketId = getReceiverSocketId(receiverId);
         if (receiverSocketId) {
             console.log("Emitting message to socket:", receiverSocketId);
-            io.to(receiverSocketId).emit("newMessage", newMessage);
+            await emitWithUserInfo(receiverSocketId, "newMessage", newMessage);
         }
 
         res.status(201).json(newMessage);
