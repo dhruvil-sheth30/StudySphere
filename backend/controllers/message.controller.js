@@ -8,6 +8,13 @@ export const sendMessage = async (req, res) => {
         const { id: receiverId } = req.params;
         const senderId = req.user._id;
 
+        console.log("Message request received:", {
+            hasMessage: !!message,
+            hasImage: !!imageUrl,
+            receiverId,
+            fromUser: req.user.username
+        });
+
         // Require either a message or an imageUrl
         if (!message && !imageUrl) {
             return res.status(400).json({ error: "Message text or image is required" });
@@ -18,34 +25,37 @@ export const sendMessage = async (req, res) => {
         });
 
         if (!conversation) {
+            console.log("Creating new conversation between", senderId, "and", receiverId);
             conversation = await Conversation.create({
                 participants: [senderId, receiverId],
             });
         }
 
-        // Check if imageUrl is a base64 string (temporary development solution)
-        let finalImageUrl = imageUrl;
-        if (imageUrl && imageUrl.startsWith('data:image')) {
-            // For development: just store the base64 string directly
-            // In production, this should be replaced with proper Cloudinary upload
-            console.log("Using base64 image (development mode)");
-        }
-
-        const newMessage = new Message({
+        // Prepare message document
+        const messageData = {
             senderId,
             receiverId,
-            message,
-            imageUrl: finalImageUrl,
-        });
+        };
+        
+        // Only add non-empty fields
+        if (message) messageData.message = message;
+        if (imageUrl) messageData.imageUrl = imageUrl;
+        
+        const newMessage = new Message(messageData);
 
+        // Add message to conversation
         if (newMessage) {
             conversation.messages.push(newMessage._id);
         }
 
+        // Save both conversation and message
         await Promise.all([conversation.save(), newMessage.save()]);
+        console.log("Message saved successfully:", newMessage._id);
 
+        // Send real-time notification
         const receiverSocketId = getReceiverSocketId(receiverId);
         if (receiverSocketId) {
+            console.log("Emitting message to socket:", receiverSocketId);
             io.to(receiverSocketId).emit("newMessage", newMessage);
         }
 

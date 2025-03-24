@@ -1,12 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BsImage } from 'react-icons/bs';
 import { MdCancel } from 'react-icons/md';
 import toast from 'react-hot-toast';
-import { API_BASE_URL } from '../../config/api';
 
 const ImageUpload = ({ onImageSelected, onImageClear }) => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+
+  // Ensure previewUrl changes are synced with the parent component
+  useEffect(() => {
+    if (previewUrl) {
+      console.log("ImageUpload: Calling onImageSelected with URL");
+      onImageSelected(previewUrl);
+    }
+  }, [previewUrl, onImageSelected]);
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -24,23 +31,18 @@ const ImageUpload = ({ onImageSelected, onImageClear }) => {
       return;
     }
 
-    // Create preview
-    const reader = new FileReader();
-    reader.onload = () => {
-      setPreviewUrl(reader.result);
-    };
-    reader.readAsDataURL(file);
-
-    // Use the base64 data URL directly
+    setIsUploading(true);
     try {
-      setIsUploading(true);
-      
-      // Use base64 directly for development
-      onImageSelected(reader.result);
-      toast.success('Image ready to send');
-      setIsUploading(false);
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        console.log("ImageUpload: File loaded, setting preview URL");
+        setPreviewUrl(reader.result);
+        toast.success('Image ready to send');
+      };
+      reader.readAsDataURL(file);
     } catch (error) {
-      console.error('Upload error:', error);
+      console.error('Image processing error:', error);
       toast.error(error.message || 'Error processing image');
     } finally {
       setIsUploading(false);
@@ -48,8 +50,10 @@ const ImageUpload = ({ onImageSelected, onImageClear }) => {
   };
 
   const clearImage = () => {
+    console.log("ImageUpload: Clearing image");
     setPreviewUrl(null);
     onImageClear();
+    toast.success('Image removed');
   };
 
   return (

@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { BsSend } from "react-icons/bs";
+import { useState, useEffect } from "react";
 import { IoSend } from "react-icons/io5";
 import useSendMessage from "../../hooks/useSendMessage";
 import ImageUpload from "./ImageUpload";
@@ -7,17 +6,48 @@ import ImageUpload from "./ImageUpload";
 const MessageInput = () => {
     const [message, setMessage] = useState("");
     const [imageUrl, setImageUrl] = useState(null);
+    const [debugInfo, setDebugInfo] = useState({ hasContent: false });
     const { loading, sendMessage } = useSendMessage();
+
+    // Force check hasContent whenever message or imageUrl changes
+    const hasContent = Boolean(message.trim() || imageUrl);
+    
+    // Debug logging for UI state
+    useEffect(() => {
+        const info = {
+            hasContent,
+            messageLength: message?.length,
+            hasImageUrl: !!imageUrl,
+            buttonActive: hasContent && !loading,
+        };
+        setDebugInfo(info);
+        console.log("Input State:", info);
+    }, [message, imageUrl, hasContent, loading]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!message && !imageUrl) return;
-        await sendMessage(message, imageUrl);
-        setMessage("");
-        setImageUrl(null);
+        
+        console.log("Form submitted with:", {
+            message: message || "(empty)",
+            hasImage: !!imageUrl
+        });
+        
+        // Don't proceed if there's nothing to send
+        if (!message.trim() && !imageUrl) {
+            console.warn("No content to send");
+            return;
+        }
+        
+        try {
+            await sendMessage(message.trim(), imageUrl);
+            
+            // Clear inputs after successful send
+            setMessage("");
+            setImageUrl(null);
+        } catch (error) {
+            console.error("Error sending message:", error);
+        }
     };
-
-    const hasContent = message.trim() || imageUrl;
 
     return (
         <form className='px-4 my-3' onSubmit={handleSubmit}>
@@ -33,8 +63,14 @@ const MessageInput = () => {
                 <div className="relative flex items-center bg-gray-700 rounded-lg overflow-hidden">
                     <div className="flex-shrink-0 pl-2">
                         <ImageUpload 
-                            onImageSelected={setImageUrl} 
-                            onImageClear={() => setImageUrl(null)} 
+                            onImageSelected={(url) => {
+                                console.log("Image selected in MessageInput:", url ? "YES" : "NO");
+                                setImageUrl(url);
+                            }} 
+                            onImageClear={() => {
+                                console.log("Image cleared in MessageInput");
+                                setImageUrl(null);
+                            }} 
                         />
                     </div>
                     
@@ -54,6 +90,7 @@ const MessageInput = () => {
                                 : 'text-gray-400 bg-gray-800 cursor-not-allowed'
                         } transition-colors`}
                         disabled={loading || !hasContent}
+                        onClick={() => console.log("Send button clicked, hasContent:", hasContent)}
                     >
                         {loading ? 
                             <div className='loading loading-spinner loading-sm'></div> : 
@@ -68,6 +105,13 @@ const MessageInput = () => {
                     </div>
                 )}
             </div>
+            
+            {/* Debug info - remove in production */}
+            {process.env.NODE_ENV !== 'production' && (
+                <pre className="text-xs text-gray-500 mt-2 hidden">
+                    {JSON.stringify(debugInfo, null, 2)}
+                </pre>
+            )}
         </form>
     );
 };
