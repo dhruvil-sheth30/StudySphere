@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useSocketContext } from "../context/SocketContext";
 import useConversation from "../zustand/useConversation";
 import notificationSound from "../assets/sounds/notification.mp3";
@@ -19,33 +19,28 @@ const useListenMessages = () => {
 			const sound = new Audio(notificationSound);
 			sound.play();
 
-			// CORRECT WAY TO CHECK: A message belongs to the current conversation if:
-			// 1. It's sent by the current user TO the selected conversation user, OR
-			// 2. It's received by the current user FROM the selected conversation user
-			const isCurrentUserSender = newMessage.senderId === authUser._id;
-			const isCurrentUserReceiver = newMessage.receiverId === authUser._id;
-			const isTalkingWithSender = newMessage.senderId === selectedConversation._id;
-			const isTalkingWithReceiver = newMessage.receiverId === selectedConversation._id;
+			// FIXED: Enhanced message conversation check with clear variable names
+			const iAmSender = newMessage.senderId === authUser._id;
+			const iAmReceiver = newMessage.receiverId === authUser._id;
+			
+			const isWithSelectedUser = 
+				(iAmSender && newMessage.receiverId === selectedConversation._id) || 
+				(iAmReceiver && newMessage.senderId === selectedConversation._id);
 
-			const isFromCurrentConversation = 
-				(isCurrentUserSender && isTalkingWithReceiver) || 
-				(isCurrentUserReceiver && isTalkingWithSender);
-
-			// Log for debugging
-			console.log("New message received:", {
-				from: newMessage.senderId,
-				to: newMessage.receiverId,
-				content: newMessage.message || "(image)",
-				belongsToCurrentConversation: isFromCurrentConversation
-			});
-
-			if (isFromCurrentConversation) {
-				// Only add the message to the current view if it belongs here
+			if (isWithSelectedUser) {
+				// Add the message to the current conversation
 				newMessage.shouldShake = true;
-				setMessages((prevMessages) => [...prevMessages, newMessage]); // FIX: Functional Update
+				
+				// Use functional update to ensure we're working with the latest state
+				setMessages(prev => {
+					// Prevent duplicate messages by checking if we already have this message ID
+					if (prev.some(msg => msg._id === newMessage._id)) {
+						return prev;
+					}
+					return [...prev, newMessage];
+				});
 			} else {
 				// This message belongs to a different conversation
-				// Get the name from our contacts or use "Someone"
 				const senderName = newMessage.senderName || "Someone";
 				
 				toast.custom((t) => (

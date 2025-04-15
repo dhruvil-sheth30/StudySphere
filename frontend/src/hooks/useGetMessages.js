@@ -10,19 +10,25 @@ const useGetMessages = () => {
 	useEffect(() => {
 		const getMessages = async () => {
 			if (!selectedConversation?._id) {
-				console.warn("No conversation selected");
 				return;
 			}
 			
 			setLoading(true);
 			try {
-				console.log("Fetching messages for conversation:", selectedConversation._id);
 				const data = await fetchWithErrorHandling(`${API_BASE_URL}/api/message/${selectedConversation._id}`);
-				console.log("Messages data:", data);
-				setMessages(data);
+				
+				// Ensure data is an array
+				if (Array.isArray(data)) {
+					setMessages(data);
+				} else {
+					console.error("Expected array of messages but received:", data);
+					setMessages([]);
+				}
 			} catch (error) {
-				console.error("Error fetching messages:", error.message);
+				console.error("Error fetching messages:", error);
 				toast.error(error.message || "Failed to load messages");
+				// Reset messages to empty array on error
+				setMessages([]);
 			} finally {
 				setLoading(false);
 			}

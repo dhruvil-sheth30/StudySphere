@@ -10,7 +10,6 @@ const ImageUpload = ({ onImageSelected, onImageClear }) => {
   // Ensure previewUrl changes are synced with the parent component
   useEffect(() => {
     if (previewUrl) {
-      console.log("ImageUpload: Calling onImageSelected with URL");
       onImageSelected(previewUrl);
     }
   }, [previewUrl, onImageSelected]);
@@ -36,24 +35,20 @@ const ImageUpload = ({ onImageSelected, onImageClear }) => {
       // Create preview
       const reader = new FileReader();
       reader.onload = () => {
-        console.log("ImageUpload: File loaded, setting preview URL");
         setPreviewUrl(reader.result);
         toast.success('Image ready to send');
       };
       reader.readAsDataURL(file);
     } catch (error) {
-      console.error('Image processing error:', error);
-      toast.error(error.message || 'Error processing image');
+      toast.error('Error processing image');
     } finally {
       setIsUploading(false);
     }
   };
 
   const clearImage = () => {
-    console.log("ImageUpload: Clearing image");
     setPreviewUrl(null);
     onImageClear();
-    toast.success('Image removed');
   };
 
   return (

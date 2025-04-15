@@ -13,15 +13,11 @@ const useLogin = () => {
 		
 		setLoading(true);
 		try {
-			console.log("Attempting login for:", username);
-			
 			const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
 				method: "POST",
 				...fetchOptions,
 				body: JSON.stringify({ username, password }),
 			});
-
-			console.log("Login response status:", res.status);
 			
 			const data = await res.json();
 			if (data.error) {
@@ -31,12 +27,9 @@ const useLogin = () => {
 			localStorage.setItem("chat-user", JSON.stringify(data));
 			setAuthUser(data);
 			
-			console.log("Login successful:", data);
-			console.log("Cookie received:", document.cookie);
 			toast.success("Login successful!");
 			return true; // Return success status
 		} catch (error) {
-			console.error("Login error:", error);
 			toast.error(error.message || "Login failed");
 			return false; // Return failure status
 		} finally {

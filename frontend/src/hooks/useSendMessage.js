@@ -8,15 +8,9 @@ const useSendMessage = () => {
     const { messages, setMessages, selectedConversation } = useConversation();
 
     const sendMessage = async (message = "", imageUrl = null) => {
-        console.log("sendMessage called with:", { 
-            message: message || "(empty)", 
-            hasImage: !!imageUrl 
-        });
-        
         // Early validation to prevent sending empty messages
         const hasContent = Boolean(message || imageUrl);
         if (!hasContent) {
-            console.warn("Attempted to send empty message");
             return;
         }
         
@@ -32,12 +26,6 @@ const useSendMessage = () => {
                 message: message || "",  // Empty string for image-only messages
                 imageUrl: imageUrl      // Keep imageUrl as is (could be null)
             };
-            
-            console.log("Sending payload:", {
-                to: selectedConversation.fullName,
-                hasText: !!payload.message,
-                hasImage: !!payload.imageUrl,
-            });
 
             const res = await fetch(`${API_BASE_URL}/api/message/send/${selectedConversation._id}`, {
                 method: "POST",
@@ -50,23 +38,19 @@ const useSendMessage = () => {
             });
             
             if (!res.ok) {
-                const errorText = await res.text();
-                console.error("Server error response:", errorText);
-                throw new Error(`Server error: ${res.status}`);
+                throw new Error(`Failed to send message`);
             }
             
             const data = await res.json();
             if (data.error) throw new Error(data.error);
 
-            console.log("Message sent successfully:", data);
             setMessages([...messages, data]);
             
-            // Show success notification for image messages
+            // Show success notification only for image messages
             if (imageUrl) {
                 toast.success("Image sent successfully");
             }
         } catch (error) {
-            console.error("Error sending message:", error);
             toast.error(error.message || "Failed to send message");
         } finally {
             setLoading(false);

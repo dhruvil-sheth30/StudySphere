@@ -17,12 +17,9 @@ const useGetConversations = () => {
 
 			setLoading(true);
 			try {
-				console.log("Fetching conversations...");
 				const data = await fetchWithErrorHandling(`${API_BASE_URL}/api/users`);
-				console.log("Conversations data:", data);
 				setConversations(data);
 			} catch (error) {
-				console.error("Error fetching conversations:", error.message);
 				// Only show error toast if the user is authenticated
 				if (authUser) {
 					toast.error(error.message || "Failed to load conversations");

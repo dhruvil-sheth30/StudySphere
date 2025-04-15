@@ -11,7 +11,6 @@ const ImageMessage = ({ imageUrl }) => {
   const handleImageError = (e) => {
     e.target.onerror = null; 
     e.target.src = '/fallback-image.png'; // Use a fallback image
-    console.error('Image failed to load:', imageUrl);
   };
 
   return (

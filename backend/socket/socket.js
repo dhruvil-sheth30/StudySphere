@@ -5,7 +5,6 @@ import User from "../models/user.model.js";
 
 const app = express();
 const isProduction = process.env.NODE_ENV === "production";
-console.log("Socket.io - Environment:", process.env.NODE_ENV);
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -27,26 +26,36 @@ export const getReceiverSocketId = (receiverId) => {
 };
 
 io.on("connection", (socket) => {
-    console.log("a user connected", socket.id);
-
     const userId = socket.handshake.query.userId;
-    if (userId != "undefined") userSocketMap[userId] = socket.id;
-
-    // Emit online users to all connected clients
-    io.emit("getOnlineUsers", Object.keys(userSocketMap));
+    
+    if (userId && userId !== "undefined") {
+        // Store user's socket connection
+        userSocketMap[userId] = socket.id;
+        
+        // Log connection status
+        console.log(`User connected: ${userId}`);
+        
+        // Emit online users to all connected clients
+        io.emit("getOnlineUsers", Object.keys(userSocketMap));
+        
+        // Log all online users
+        console.log("Online users:", Object.keys(userSocketMap));
+    }
 
     // Handle disconnection
     socket.on("disconnect", () => {
-        console.log("user disconnected", socket.id);
-        delete userSocketMap[userId];
-        io.emit("getOnlineUsers", Object.keys(userSocketMap));
+        if (userId && userId !== "undefined") {
+            console.log(`User disconnected: ${userId}`);
+            delete userSocketMap[userId];
+            io.emit("getOnlineUsers", Object.keys(userSocketMap));
+        }
     });
 });
 
 // Custom function to emit a message with user information
 export const emitWithUserInfo = async (receiverSocketId, eventName, message) => {
     try {
-        // Attach sender name if possible
+        // Ensure we have the sender's name for better UX
         if (message.senderId) {
             const sender = await User.findById(message.senderId).select("fullName");
             if (sender) {
@@ -54,9 +63,18 @@ export const emitWithUserInfo = async (receiverSocketId, eventName, message) => 
             }
         }
         
+        // Emit to specific recipient
         io.to(receiverSocketId).emit(eventName, message);
+        
+        console.log(`Message emitted to ${receiverSocketId}:`, {
+            event: eventName, 
+            messageId: message._id,
+            from: message.senderId,
+            to: message.receiverId
+        });
     } catch (error) {
-        console.error("Error in emitWithUserInfo:", error);
+        console.error("Error emitting message:", error);
+        
         // Fallback to regular emit without additional info
         io.to(receiverSocketId).emit(eventName, message);
     }
