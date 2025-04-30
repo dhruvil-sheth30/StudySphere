@@ -1,18 +1,27 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { BsImage } from 'react-icons/bs';
 import { MdCancel } from 'react-icons/md';
 import toast from 'react-hot-toast';
 
-const ImageUpload = ({ onImageSelected, onImageClear }) => {
+const ImageUpload = forwardRef(({ onImageSelected, onImageClear }, ref) => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+
+  // Expose resetImage method to parent component
+  useImperativeHandle(ref, () => ({
+    resetImage: () => {
+      setPreviewUrl(null);
+    }
+  }));
 
   // Ensure previewUrl changes are synced with the parent component
   useEffect(() => {
     if (previewUrl) {
       onImageSelected(previewUrl);
+    } else if (previewUrl === null) {
+      onImageClear();
     }
-  }, [previewUrl, onImageSelected]);
+  }, [previewUrl, onImageSelected, onImageClear]);
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -89,6 +98,8 @@ const ImageUpload = ({ onImageSelected, onImageClear }) => {
       )}
     </div>
   );
-};
+});
+
+ImageUpload.displayName = 'ImageUpload';
 
 export default ImageUpload;

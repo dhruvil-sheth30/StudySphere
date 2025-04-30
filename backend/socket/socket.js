@@ -42,6 +42,28 @@ io.on("connection", (socket) => {
         console.log("Online users:", Object.keys(userSocketMap));
     }
 
+    // Handle findUser request for notification redirection
+    socket.on("findUser", async (userId) => {
+        try {
+            if (!userId) return;
+            
+            // Find user by ID (exclude password field)
+            const user = await User.findById(userId).select("-password");
+            
+            if (user) {
+                // Send user data back to the requester
+                socket.emit("userFound", {
+                    _id: user._id,
+                    fullName: user.fullName,
+                    username: user.username,
+                    profilePic: user.profilePic
+                });
+            }
+        } catch (error) {
+            console.error("Error finding user:", error);
+        }
+    });
+
     // Handle disconnection
     socket.on("disconnect", () => {
         if (userId && userId !== "undefined") {
@@ -57,9 +79,16 @@ export const emitWithUserInfo = async (receiverSocketId, eventName, message) => 
     try {
         // Ensure we have the sender's name for better UX
         if (message.senderId) {
-            const sender = await User.findById(message.senderId).select("fullName");
+            const sender = await User.findById(message.senderId).select("fullName username profilePic");
             if (sender) {
                 message.senderName = sender.fullName;
+                // Add sender info to improve notification redirect
+                message.sender = {
+                    _id: sender._id,
+                    fullName: sender.fullName,
+                    username: sender.username,
+                    profilePic: sender.profilePic
+                };
             }
         }
         

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import MessageContainer from "../../components/messages/MessageContainer";
 import Sidebar from "../../components/sidebar/Sidebar";
+import BackendLoadingNotice from "../../components/common/BackendLoadingNotice";
 
 const Home = () => {
 	// Check for mobile on initial render and when window resizes
@@ -28,26 +29,31 @@ const Home = () => {
 	};
 	
 	return (
-		<div className='flex sm:h-[450px] md:h-[550px] rounded-lg overflow-hidden bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-lg w-full max-w-6xl mx-auto'>
-			{/* Responsive layout */}
-			<div className={`flex w-full ${isMobile ? "flex-col" : "flex-row"}`}>
-				{/* Sidebar - hidden on mobile when in chat view */}
-				<div className={`
-					${!isMobile ? "w-1/3 max-w-xs" : "w-full"}
-					${isMobile && mobileView === "chat" ? "hidden" : "block"}
-				`}>
-					<Sidebar onSelectConversation={isMobile ? () => setMobileView("chat") : undefined} />
-				</div>
-				
-				{/* Message Container - hidden on mobile when in sidebar view */}
-				<div className={`
-					${!isMobile ? "flex-1" : "w-full"}
-					${isMobile && mobileView === "sidebar" ? "hidden" : "block"}
-				`}>
-					<MessageContainer onBackClick={isMobile ? toggleMobileView : null} />
+		<>
+			{/* Backend loading notice */}
+			<BackendLoadingNotice />
+			
+			<div className='flex sm:h-[450px] md:h-[550px] rounded-lg overflow-hidden bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-lg w-full max-w-6xl mx-auto'>
+				{/* Responsive layout */}
+				<div className={`flex w-full ${isMobile ? "flex-col" : "flex-row"}`}>
+					{/* Sidebar - hidden on mobile when in chat view */}
+					<div className={`
+						${!isMobile ? "w-1/3 max-w-xs" : "w-full"}
+						${isMobile && mobileView === "chat" ? "hidden" : "block"}
+					`}>
+						<Sidebar onSelectConversation={isMobile ? () => setMobileView("chat") : undefined} />
+					</div>
+					
+					{/* Message Container - hidden on mobile when in sidebar view */}
+					<div className={`
+						${!isMobile ? "flex-1" : "w-full"}
+						${isMobile && mobileView === "sidebar" ? "hidden" : "block"}
+					`}>
+						<MessageContainer onBackClick={isMobile ? toggleMobileView : null} />
+					</div>
 				</div>
 			</div>
-		</div>
+		</>
 	);
 };
 

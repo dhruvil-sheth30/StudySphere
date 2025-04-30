@@ -14,6 +14,7 @@ const MessageInput = () => {
     const inputRef = useRef(null);
     const emojiPickerRef = useRef(null);
     const emojiButtonRef = useRef(null);
+    const imageUploadRef = useRef(null);
 
     // Focus the input when component mounts
     useEffect(() => {
@@ -59,7 +60,14 @@ const MessageInput = () => {
             
             // Clear inputs after successful send
             setMessage("");
+            
+            // Clear the image
             setImageUrl(null);
+            
+            // Reset ImageUpload component if we have a ref to it
+            if (imageUploadRef.current && typeof imageUploadRef.current.resetImage === 'function') {
+                imageUploadRef.current.resetImage();
+            }
             
             // Focus back on input
             setTimeout(() => {
@@ -119,6 +127,7 @@ const MessageInput = () => {
                 <div className="relative flex items-center bg-gray-700 rounded-lg overflow-hidden shadow-md">
                     <div className="flex-shrink-0 pl-2">
                         <ImageUpload 
+                            ref={imageUploadRef}
                             onImageSelected={(url) => setImageUrl(url)} 
                             onImageClear={() => setImageUrl(null)} 
                         />
