@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
 import { BiLogOut, BiUserCircle } from "react-icons/bi";
 import { FaBars, FaTimes, FaCaretDown } from "react-icons/fa";
@@ -11,6 +11,10 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const location = useLocation();
+  
+  // Check if user is currently on the chat page
+  const isOnChatPage = location.pathname === '/chat';
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -93,9 +97,12 @@ const Navbar = () => {
                   )}
                 </div>
 
-                <Link to="/chat" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                  Chat
-                </Link>
+                {/* Only show chat link if not on chat page */}
+                {!isOnChatPage && (
+                  <Link to="/chat" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                    Chat
+                  </Link>
+                )}
               </div>
             ) : (
               <div className="flex items-center gap-2">
@@ -133,13 +140,15 @@ const Navbar = () => {
           {authUser ? (
             <div className="flex flex-col space-y-2">
               <span className="text-gray-300 text-sm py-2">Hi, {authUser.fullName}</span>
-              <Link 
-                to="/chat" 
-                className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Chat
-              </Link>
+              {!isOnChatPage && (
+                <Link 
+                  to="/chat" 
+                  className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Chat
+                </Link>
+              )}
               <Link 
                 to="/profile" 
                 className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
